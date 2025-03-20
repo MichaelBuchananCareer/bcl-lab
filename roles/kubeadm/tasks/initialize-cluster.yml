@@ -1,0 +1,38 @@
+---
+- name: Get the node's private IP
+  ansible.builtin.shell: "hostname -I | awk '{print $1}'"
+  register: local_ip
+  changed_when: false
+
+#- name: Initialize Kubernetes Cluster on First Control Plane Node
+#  become: true
+#  command: kubeadm init --pod-network-cidr="{{pod_network_cidr}}" --upload-certs --ignore-preflight-errors=all
+#  run_once: true
+
+- name: Ensure .kube exists
+  file:
+    path: /home/{{ ansible_user }}/.kube
+    state: directory
+
+- name: Set up kubeconfig for admin user
+  become: yes
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/{{ ansible_user }}/.kube/config
+    remote_src: yes
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Remove the cache directory
+  become_user: bcladmin
+  become_method: sudo
+  file:
+    path: /home/{{ ansible_user }}/.kube/cache
+    state: absent
+
+- name: Fetch kubeconfig from Kubernetes node so we can run commands locally
+  fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: ~/.kube/config
+    flat: yes

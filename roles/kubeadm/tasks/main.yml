@@ -1,0 +1,16 @@
+---
+#- name: Disable Swap (A requirement for KubeAdm)
+#  include_tasks: disable-swap.yml
+
+#- name: Update Repos for Kubernetes and download all pre-req packages
+#  include_tasks: install-prereqs.yml
+
+#- name: Copy the config templates
+#  include_tasks: copy-templates.yml
+
+#- name: Initialize the cluster
+#  include_tasks: initialize-cluster.yml
+
+- name: Deploy Networking on cluster
+  hosts: localhost
+  include_tasks: deploy-cli.yml

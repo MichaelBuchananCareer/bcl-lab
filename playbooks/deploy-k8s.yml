@@ -1,0 +1,6 @@
+---
+- name  : Configure Ubuntu and Deploy Kubeadm to single node
+  hosts : control_plane
+  become: yes
+  roles :
+    - kubeadm

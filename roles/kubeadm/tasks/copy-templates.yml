@@ -1,0 +1,29 @@
+---
+#Run modprobe commands
+- name: Apply modprobe overlay
+  community.general.modprobe:
+    name: overlay
+    state: present
+
+- name: Apply modprobe br_netfilter
+  community.general.modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Ensure /etc/containerd directory exists
+  file:
+    path: /etc/containerd
+    state: directory
+    mode: '0755'
+
+- name: Apply Containerd config to ensure correct reg entry and Cgroup 
+  template:
+    src: ../templates/config.toml.j2
+    dest: /etc/containerd/config.toml
+  notify:
+    - Restart containerd
+
+- name: Apply Kubernetes config file template
+  template:
+    src: ../templates/k8s.conf.j2
+    dest: /etc/sysctl.d/k8s.conf

@@ -1,0 +1,11 @@
+---
+- name: Disable Regular Swap Immediately
+  command: swapoff -a
+  become: yes
+
+- name: Ensure Swap is Disabled at Boot (Remove from /etc/fstab)
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*\s+swap\s+.*)$'
+    replace: '# \1'
+  become: yes
